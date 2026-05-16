@@ -7,7 +7,9 @@ using System.Text;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.AspNetCore.Http.Features;
 
+
 var builder = WebApplication.CreateBuilder(args);
+var uploadsPath = Path.Combine(Directory.GetCurrentDirectory(), "Uploads");
 
 // Add DbContext
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -93,10 +95,15 @@ app.UseAuthorization();   // 🔐 Enables [Authorize]
 
 app.UseStaticFiles();
 
+// Create folder if it doesn't exist
+if (!Directory.Exists(uploadsPath))
+{
+    Directory.CreateDirectory(uploadsPath);
+}
+
 app.UseStaticFiles(new StaticFileOptions
 {
-    FileProvider = new PhysicalFileProvider(
-        Path.Combine(Directory.GetCurrentDirectory(), "Uploads")),
+    FileProvider = new PhysicalFileProvider(uploadsPath),
     RequestPath = "/uploads"
 });
 
